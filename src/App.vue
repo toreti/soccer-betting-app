@@ -5,10 +5,9 @@
 </template>
 
 <script>
-import Token from './components/Token.vue'
+import Token from './components/Token'
 
 export default {
-  name: 'App',
   components: {
     Token,
   }
@@ -22,6 +21,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin: 60px auto;
+  max-width: 500px;
 }
 </style>
