@@ -228,6 +228,11 @@ export default [
       {
         "components": [
           {
+            "internalType": "bytes32",
+            "name": "hash",
+            "type": "bytes32"
+          },
+          {
             "internalType": "string",
             "name": "teamA",
             "type": "string"
@@ -274,7 +279,7 @@ export default [
   },
   {
     "inputs": [],
-    "name": "getGameAddress",
+    "name": "getGamesAddress",
     "outputs": [
       {
         "internalType": "bytes32[]",

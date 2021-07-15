@@ -5,7 +5,7 @@ import contractAbi from '../contracts/contract'
 import tokenAbi from '../contracts/token'
 
 const web3 = new Web3('http://localhost:7545')
-const contractAddress = '0x00a0C4f3cC28F19b6d49dFB4CD3553d657aE7898'
+const contractAddress = '0x8ED832d2C0895654Ba24c109ad7483ab5fcDf83C'
 const contract = new web3.eth.Contract(contractAbi, contractAddress)
 const tokenAddress = '0xb40522068a89111ED350F8aCE4d64eA1ef5ba261'
 const tokenContract = new web3.eth.Contract(tokenAbi, tokenAddress)

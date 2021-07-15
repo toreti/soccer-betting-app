@@ -35,17 +35,43 @@
         <tr>
           <th>Match</th>
           <th>Date</th>
-          <th>Token</th>
+          <th>Open</th>
+          <th>Finished</th>
+          <th>Result</th>
+          <th>Actions</th>
         </tr>
         </thead>
         <tbody>
         <tr v-for="game in gamesList.list" :key="game.date">
-          <td>{{ game.teamA }} x {{ game.teamB }}</td>
+          <td v-bind:title="game.hash">{{ game.teamA }} x {{ game.teamB }}</td>
           <td>{{ game.date }}</td>
-          <td>{{ game.token }}</td>
+          <td>{{ game.open }}</td>
+          <td>{{ game.finished }}</td>
+          <td>{{ game.result }}</td>
+          <td>
+            <button>Close</button>
+            <button>Finish</button>
+          </td>
         </tr>
         </tbody>
       </table>
+    </fieldset>
+    <fieldset>
+      <legend>Actions</legend>
+      <fieldset>
+        <legend>Close bets</legend>
+        <div>
+          <label for="game">Game:</label>
+          <select id="game" v-model="closeBet.game">
+            <option v-for="game in gamesList.list" v-bind:value="game.hash" :key="game.date">
+              {{ game.teamA }} x {{ game.teamB }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <button @click="close">Close</button>
+        </div>
+      </fieldset>
     </fieldset>
   </fieldset>
 </template>
@@ -69,6 +95,10 @@ export default {
         },
         saving: false,
       },
+      closeBet: {
+        game: null,
+        closing: false,
+      }
     }
   },
   computed: {
@@ -82,7 +112,8 @@ export default {
   methods: {
     listGames() {
       this.gamesList.loading = true
-      this.contract.methods.getGameAddress().call().then(hashs => {
+      this.contract.methods.getGamesAddress().call().then(hashs => {
+        this.gamesList.list = []
         this.gamesList.loading = false
         hashs.forEach(hash => {
           this.contract.methods.getGame(hash).call().then(game => {
@@ -90,6 +121,16 @@ export default {
           })
         })
       })
+    },
+    close() {
+      this.closing = true
+      this.contract.methods
+          .closeBets(this.closeBet.game)
+          .send({from: this.account, gas: 1000000})
+          .then(() => {
+            this.closing = false
+            this.listGames()
+          })
     },
     save() {
       this.newGame.saving = true
