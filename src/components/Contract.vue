@@ -25,6 +25,28 @@
         </button>
       </div>
     </fieldset>
+    <fieldset>
+      <legend>List games</legend>
+      <div v-if="gamesList.loading">
+        <strong>Loading...</strong>
+      </div>
+      <table v-if="!gamesList.loading">
+        <thead>
+        <tr>
+          <th>Match</th>
+          <th>Date</th>
+          <th>Token</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr v-for="game in gamesList.list" :key="game.date">
+          <td>{{ game.teamA }} x {{ game.teamB }}</td>
+          <td>{{ game.date }}</td>
+          <td>{{ game.token }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </fieldset>
   </fieldset>
 </template>
 
@@ -34,6 +56,10 @@ import {mapState} from 'vuex'
 export default {
   data() {
     return {
+      gamesList: {
+        loading: false,
+        list: [],
+      },
       newGame: {
         game: {
           teamA: null,
@@ -54,6 +80,17 @@ export default {
     })
   },
   methods: {
+    listGames() {
+      this.gamesList.loading = true
+      this.contract.methods.getGameAddress().call().then(hashs => {
+        this.gamesList.loading = false
+        hashs.forEach(hash => {
+          this.contract.methods.getGame(hash).call().then(game => {
+            this.gamesList.list.push(game)
+          })
+        })
+      })
+    },
     save() {
       this.newGame.saving = true
       this.contract.methods
@@ -66,12 +103,17 @@ export default {
           .on('confirmation', (confirmationNumber, receipt, latestBlockHash) => {
             console.log('confirmation', confirmationNumber, receipt, latestBlockHash)
             this.newGame.saving = false
+            this.listGames()
           })
           .on('error', (error, receipt) => {
             console.log('error', error, receipt)
             this.newGame.saving = false
+            this.listGames()
           })
     }
+  },
+  mounted() {
+    this.listGames()
   }
 }
 </script>
