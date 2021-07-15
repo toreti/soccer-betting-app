@@ -1,14 +1,17 @@
 <template>
   <div id="app">
-    <token></token>
+    <token/>
+    <contract/>
   </div>
 </template>
 
 <script>
+import Contract from './components/Contract'
 import Token from './components/Token'
 
 export default {
   components: {
+    Contract,
     Token,
   }
 }

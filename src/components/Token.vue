@@ -55,7 +55,7 @@ export default {
       }
     }
   },
-  computed: mapState({
+  computed: {
     ...mapState({
       account: state => state.account,
       token: state => state.token,
@@ -70,7 +70,7 @@ export default {
     isValidAmount() {
       return !Number.isNaN(this.faucet.amount) && this.faucet.amount > 0
     },
-  }),
+  },
   methods: {
     formatFromWei: function (value) {
       return value ? this.web3.utils.fromWei(value.toString()) : 0
