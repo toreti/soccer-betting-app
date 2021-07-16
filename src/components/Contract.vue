@@ -38,7 +38,6 @@
           <th>Open</th>
           <th>Finished</th>
           <th>Result</th>
-          <th>Actions</th>
         </tr>
         </thead>
         <tbody>
@@ -48,10 +47,6 @@
           <td>{{ game.open }}</td>
           <td>{{ game.finished }}</td>
           <td>{{ game.result }}</td>
-          <td>
-            <button>Close</button>
-            <button>Finish</button>
-          </td>
         </tr>
         </tbody>
       </table>
@@ -70,6 +65,28 @@
         </div>
         <div>
           <button @click="close">Close</button>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Finish game</legend>
+        <div>
+          <label for="finishGame">Game:</label>
+          <select id="finishGame" v-model="finishGame.game">
+            <option v-for="game in gamesList.list" v-bind:value="game.hash" :key="game.date">
+              {{ game.teamA }} x {{ game.teamB }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label for="finishResult">Result:</label>
+          <select id="finishResult" v-model="finishGame.result">
+            <option value="0">Team A</option>
+            <option value="1">Team B</option>
+            <option value="2">Tie</option>
+          </select>
+        </div>
+        <div>
+          <button @click="finish">Finish</button>
         </div>
       </fieldset>
     </fieldset>
@@ -98,7 +115,12 @@ export default {
       closeBet: {
         game: null,
         closing: false,
-      }
+      },
+      finishGame: {
+        game: null,
+        result: null,
+        finishing: false,
+      },
     }
   },
   computed: {
@@ -129,6 +151,16 @@ export default {
           .send({from: this.account, gas: 1000000})
           .then(() => {
             this.closing = false
+            this.listGames()
+          })
+    },
+    finish() {
+      this.finishing = true
+      this.contract.methods
+          .setResult(this.finishGame.game, this.finishGame.result)
+          .send({from: this.account, gas: 1000000})
+          .then(() => {
+            this.finishing = false
             this.listGames()
           })
     },
