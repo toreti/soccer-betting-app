@@ -90,13 +90,18 @@
         </div>
       </fieldset>
     </fieldset>
+    <bet/>
   </fieldset>
 </template>
 
 <script>
 import {mapState} from 'vuex'
+import Bet from "@/components/Bet";
 
 export default {
+  components: {
+    Bet,
+  },
   data() {
     return {
       gamesList: {
