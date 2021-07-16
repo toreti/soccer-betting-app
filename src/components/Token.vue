@@ -1,15 +1,17 @@
 <template>
   <fieldset>
-    <legend>Token</legend>
-    <div>Address: <strong>{{ token.address }}</strong></div>
-    <div>Owner: <strong>{{ owner }}</strong></div>
-    <div>Name: <strong>{{ name }}</strong></div>
-    <div>Symbol: <strong>{{ symbol }}</strong></div>
-    <div>Decimals: <strong>{{ decimals }}</strong></div>
-    <div>Total supply: <strong>{{ formatFromWei(totalSupply) }} {{ symbol }}</strong></div>
-    <br>
+    <legend>Faucet</legend>
     <fieldset>
-      <legend>Faucet</legend>
+      <legend>Token</legend>
+      <div>Address: <strong>{{ token.address }}</strong></div>
+      <div>Owner: <strong>{{ token.owner }}</strong></div>
+      <div>Name: <strong>{{ token.name }}</strong></div>
+      <div>Symbol: <strong>{{ token.symbol }}</strong></div>
+      <div>Decimals: <strong>{{ token.decimals }}</strong></div>
+      <div>Total supply: <strong>{{ formatFromWei(token.totalSupply) }} {{ token.symbol }}</strong></div>
+    </fieldset>
+    <fieldset>
+      <legend>Transfer</legend>
       <div>
         <label for="address">Address:</label>
         <input v-model="user.address" v-on:keyup="getBalance" id="address"/>
@@ -34,17 +36,11 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import {mapState, mapActions} from 'vuex'
 
 export default {
   data() {
     return {
-      address: null,
-      owner: null,
-      totalSupply: null,
-      decimals: null,
-      symbol: null,
-      name: null,
       faucet: {
         amount: 1,
         transferring: false,
@@ -58,8 +54,10 @@ export default {
   computed: {
     ...mapState({
       account: state => state.account,
-      token: state => state.token,
       web3: state => state.web3,
+    }),
+    ...mapState('faucet', {
+      token: state => state.token,
     }),
     canTransfer() {
       return this.isValidAddress && this.isValidAmount && !this.faucet.transferring
@@ -72,6 +70,7 @@ export default {
     },
   },
   methods: {
+    ...mapActions('faucet', ['detailToken']),
     formatFromWei: function (value) {
       return value ? this.web3.utils.fromWei(value.toString()) : 0
     },
@@ -107,11 +106,7 @@ export default {
     }
   },
   mounted() {
-    this.token.contract.methods.getOwner().call().then(result => this.owner = result)
-    this.token.contract.methods.totalSupply().call().then(result => this.totalSupply = result)
-    this.token.contract.methods.decimals().call().then(result => this.decimals = result)
-    this.token.contract.methods.symbol().call().then(result => this.symbol = result)
-    this.token.contract.methods.name().call().then(result => this.name = result)
+    this.detailToken()
     this.getBalance()
   }
 }
