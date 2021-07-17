@@ -1,5 +1,4 @@
-import Web3 from 'web3'
-import tokenAbi from '@/contracts/token'
+import {web3, tokenContract} from '@/contracts'
 import {
   TOKEN_OWNER_MUTATION,
   TOKEN_NAME_MUTATION,
@@ -15,9 +14,7 @@ import {
   TRANSFER_ACTION,
 } from './types'
 
-const web3 = new Web3('http://localhost:7545')
 const tokenAddress = '0xb40522068a89111ED350F8aCE4d64eA1ef5ba261'
-const tokenContract = new web3.eth.Contract(tokenAbi, tokenAddress)
 
 export default {
   namespaced: true,
