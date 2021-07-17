@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import Web3 from 'web3'
 import contractAbi from '../contracts/contract'
-import faucet from './modules/faucet'
+import faucet from './modules/faucet/index'
 
 const web3 = new Web3('http://localhost:7545')
 const contractAddress = '0x8ED832d2C0895654Ba24c109ad7483ab5fcDf83C'

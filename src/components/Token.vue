@@ -14,43 +14,38 @@
       <legend>Transfer</legend>
       <div>
         <label for="address">Address:</label>
-        <input v-model="user.address" v-on:keyup="getBalance" id="address"/>
+        <input v-model="address" v-on:keyup="getRecipientBalance" id="address"/>
         {{ isValidAddress ? 'valid' : 'invalid' }}
       </div>
       <div>
         <label for="amount">Amount:</label>
-        <input v-model="faucet.amount" id="amount"/>
+        <input v-model="amount" id="amount"/>
       </div>
       <div>
         <button @click="transfer" :disabled="!canTransfer">
-          {{ faucet.transferring ? 'Transferring...' : 'Transfer' }}
+          {{ transferData.processing ? 'Transferring...' : 'Transfer' }}
         </button>
       </div>
       <br>
       <fieldset>
         <legend>Balance</legend>
-        <div>{{ formatFromWei(user.balance) }} TEST</div>
+        <div>{{ formatFromWei(recipient.balance) }} TEST</div>
       </fieldset>
     </fieldset>
   </fieldset>
 </template>
 
 <script>
-import {mapState, mapActions} from 'vuex'
+import {mapState, mapMutations, mapActions} from 'vuex'
+import {
+  RECIPIENT_ADDRESS_MUTATION,
+  TRANSFER_AMOUNT_MUTATION,
+  DETAIL_TOKEN_ACTION,
+  GET_RECIPIENT_BALANCE_ACTION,
+  TRANSFER_ACTION,
+} from '@/store/modules/faucet/types'
 
 export default {
-  data() {
-    return {
-      faucet: {
-        amount: 1,
-        transferring: false,
-      },
-      user: {
-        address: '0xAC1Fc67b66d9C7c43C3dE6639A5052f90f304d47',
-        balance: 0,
-      }
-    }
-  },
   computed: {
     ...mapState({
       account: state => state.account,
@@ -58,59 +53,56 @@ export default {
     }),
     ...mapState('faucet', {
       token: state => state.token,
+      recipient: state => state.recipient,
+      transferData: state => state.transfer,
     }),
+    address: {
+      set(value) {
+        this[RECIPIENT_ADDRESS_MUTATION](value)
+      },
+      get() {
+        return this.recipient.address
+      }
+    },
+    amount: {
+      set(value) {
+        this.setTransferAmount(value)
+      },
+      get() {
+        return this.transferData.amount
+      }
+    },
     canTransfer() {
-      return this.isValidAddress && this.isValidAmount && !this.faucet.transferring
+      return this.isValidAddress && this.isValidAmount && !this.transferData.processing
     },
     isValidAddress() {
-      return this.web3.utils.isAddress(this.user.address)
+      return this.web3.utils.isAddress(this.recipient.address)
     },
     isValidAmount() {
-      return !Number.isNaN(this.faucet.amount) && this.faucet.amount > 0
+      return !Number.isNaN(this.transferData.amount) && this.transferData.amount > 0
     },
   },
   methods: {
-    ...mapActions('faucet', ['detailToken']),
+    ...mapMutations('faucet', {
+      'setRecipientAddress': RECIPIENT_ADDRESS_MUTATION,
+      'setTransferAmount': TRANSFER_AMOUNT_MUTATION,
+    }),
+    ...mapActions('faucet', {
+      'detailToken': DETAIL_TOKEN_ACTION,
+      'getRecipientBalance': GET_RECIPIENT_BALANCE_ACTION,
+      'transfer': TRANSFER_ACTION,
+    }),
     formatFromWei: function (value) {
       return value ? this.web3.utils.fromWei(value.toString()) : 0
     },
     formatToWei: function (value) {
       return value ? this.web3.utils.toWei(value.toString()) : 0
     },
-    getBalance: function () {
-      if (this.isValidAddress) {
-        this.token.contract.methods.balanceOf(this.user.address)
-            .call()
-            .then(result => this.user.balance = result)
-            .catch(error => console.log(error))
-      }
-    },
-    transfer() {
-      this.faucet.transferring = true
-      this.token.contract.methods
-          .transfer(this.user.address, this.formatToWei(this.faucet.amount))
-          .send({from: this.account, gas: 1000000})
-          .on('sending', payload => console.log('sending', payload))
-          .on('sent', payload => console.log('sent', payload))
-          .on('transactionHash', transactionHash => console.log('transactionHash', transactionHash))
-          .on('receipt', receipt => console.log('receipt', receipt))
-          .on('confirmation', (confirmationNumber, receipt, latestBlockHash) => {
-            console.log('confirmation', confirmationNumber, receipt, latestBlockHash)
-            this.faucet.transferring = false
-            this.getBalance()
-          })
-          .on('error', (error, receipt) => {
-            console.log('error', error, receipt)
-            this.faucet.transferring = false
-          })
-    }
   },
   mounted() {
     this.detailToken()
-    this.getBalance()
+    this.setRecipientAddress('0xAC1Fc67b66d9C7c43C3dE6639A5052f90f304d47')
+    this.getRecipientBalance()
   }
 }
 </script>
-
-<style>
-</style>
