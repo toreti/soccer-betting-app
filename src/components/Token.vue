@@ -48,7 +48,6 @@ import {
 export default {
   computed: {
     ...mapState({
-      account: state => state.account,
       web3: state => state.web3,
     }),
     ...mapState('faucet', {

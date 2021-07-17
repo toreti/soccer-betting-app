@@ -13,7 +13,7 @@ import {
   DETAIL_TOKEN_ACTION,
   GET_RECIPIENT_BALANCE_ACTION,
   TRANSFER_ACTION,
-} from '@/store/modules/faucet/types'
+} from './types'
 
 const web3 = new Web3('http://localhost:7545')
 const tokenAddress = '0xb40522068a89111ED350F8aCE4d64eA1ef5ba261'
