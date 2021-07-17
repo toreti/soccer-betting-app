@@ -20,7 +20,6 @@ const contract = new web3.eth.Contract(contractAbi, contractAddress)
 export default {
   namespaced: true,
   state: {
-    contract,
     addingGame: false,
     closingGame: false,
     finishingGame: false,
@@ -48,9 +47,9 @@ export default {
     },
   },
   actions: {
-    [ADD_GAME_ACTION]({state, rootState, commit, dispatch}, game) {
+    [ADD_GAME_ACTION]({rootState, commit, dispatch}, game) {
       commit(ADDING_GAME_MUTATION, true)
-      state.contract.methods
+      contract.methods
         .addGame(game.teamA, game.teamB, game.date, game.token)
         .send({from: rootState.account, gas: 1000000})
         .then(() => {
@@ -63,9 +62,9 @@ export default {
           console.error(error)
         })
     },
-    [CLOSE_GAME_ACTION]({state, rootState, commit, dispatch}, game) {
+    [CLOSE_GAME_ACTION]({rootState, commit, dispatch}, game) {
       console.log('closeGame', game)
-      state.contract.methods
+      contract.methods
         .closeBets(game)
         .send({from: rootState.account, gas: 1000000})
         .then(() => {
@@ -78,9 +77,9 @@ export default {
           console.error(error)
         })
     },
-    [FINISH_GAME_ACTION]({state, rootState, commit, dispatch}, payload) {
+    [FINISH_GAME_ACTION]({rootState, commit, dispatch}, payload) {
       commit(FINISHING_GAME_MUTATION, true)
-      state.contract.methods
+      contract.methods
         .setResult(payload.game, payload.result)
         .send({from: rootState.account, gas: 1000000})
         .then(() => {
@@ -93,16 +92,16 @@ export default {
           console.error(error)
         })
     },
-    [LIST_GAMES_ACTION]({state, commit}) {
+    [LIST_GAMES_ACTION]({commit}) {
       commit(LOADING_GAMES_MUTATION, true)
       commit(LIST_GAMES_MUTATION, [])
-      state.contract.methods
+      contract.methods
         .getGamesAddress()
         .call()
         .then(hashs => {
           commit(LOADING_GAMES_MUTATION, false)
           hashs.forEach(hash => {
-            state.contract.methods.getGame(hash).call()
+            contract.methods.getGame(hash).call()
               .then(game => commit(ADD_GAME_MUTATION, game))
               .catch(error => {
                 alert(`Error on get game "${hash}".`)

@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import Web3 from 'web3'
+import bet from './modules/bet/store'
 import contract from './modules/contract/store'
 import faucet from './modules/faucet/store'
 
@@ -19,6 +20,7 @@ const state = {
 export default new Vuex.Store({
   state,
   modules: {
+    bet,
     contract,
     faucet,
   }

@@ -23,7 +23,6 @@ export default {
   namespaced: true,
   state: {
     token: {
-      contract: tokenContract,
       address: tokenAddress,
       owner: null,
       name: null,
@@ -70,16 +69,16 @@ export default {
     },
   },
   actions: {
-    [DETAIL_TOKEN_ACTION]({state, commit}) {
-      state.token.contract.methods.getOwner().call().then(result => commit(TOKEN_OWNER_MUTATION, result))
-      state.token.contract.methods.name().call().then(result => commit(TOKEN_NAME_MUTATION, result))
-      state.token.contract.methods.symbol().call().then(result => commit(TOKEN_SYMBOL_MUTATION, result))
-      state.token.contract.methods.decimals().call().then(result => commit(TOKEN_DECIMALS_MUTATION, result))
-      state.token.contract.methods.totalSupply().call().then(result => commit(TOKEN_TOTAL_SUPPLY, result))
+    [DETAIL_TOKEN_ACTION]({commit}) {
+      tokenContract.methods.getOwner().call().then(result => commit(TOKEN_OWNER_MUTATION, result))
+      tokenContract.methods.name().call().then(result => commit(TOKEN_NAME_MUTATION, result))
+      tokenContract.methods.symbol().call().then(result => commit(TOKEN_SYMBOL_MUTATION, result))
+      tokenContract.methods.decimals().call().then(result => commit(TOKEN_DECIMALS_MUTATION, result))
+      tokenContract.methods.totalSupply().call().then(result => commit(TOKEN_TOTAL_SUPPLY, result))
     },
     [GET_RECIPIENT_BALANCE_ACTION]({state, commit}) {
       if (web3.utils.isAddress(state.recipient.address)) {
-        state.token.contract.methods
+        tokenContract.methods
           .balanceOf(state.recipient.address)
           .call()
           .then(result => commit(RECIPIENT_BALANCE_MUTATION, result))
@@ -92,7 +91,7 @@ export default {
     [TRANSFER_ACTION]({state, commit, dispatch}) {
       commit(TRANSFER_PROCESSING_MUTATION, true)
       const amount = web3.utils.toWei(state.transfer.amount.toString())
-      state.token.contract.methods
+      tokenContract.methods
         .transfer(state.recipient.address, amount)
         .send({from: state.token.owner, gas: 1000000})
         .on('sending', payload => console.log('sending', payload))

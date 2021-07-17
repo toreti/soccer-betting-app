@@ -8,24 +8,27 @@
       <close-bets/>
       <finish-game/>
     </fieldset>
-    <bet/>
+    <fieldset>
+      <legend>Bet</legend>
+      <add-bet/>
+    </fieldset>
   </fieldset>
 </template>
 
 <script>
+import AddBet from '@/components/contract/AddBet'
 import AddGame from '@/components/contract/AddGame'
 import CloseBets from '@/components/contract/CloseBets'
+import FinishGame from '@/components/contract/FinishGame'
 import ListGames from '@/components/contract/ListGames'
-import Bet from '@/components/Bet'
-import FinishGame from "@/components/contract/FinishGame";
 
 export default {
   components: {
-    FinishGame,
+    AddBet,
     AddGame,
     CloseBets,
+    FinishGame,
     ListGames,
-    Bet,
   }
 }
 </script>
