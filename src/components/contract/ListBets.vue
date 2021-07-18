@@ -1,6 +1,6 @@
 <template>
   <fieldset>
-    <legend>List games</legend>
+    <legend>Bets Total</legend>
     <table border="1" width="100%">
       <thead>
       <tr>
@@ -11,9 +11,9 @@
       </thead>
       <tbody>
       <tr>
-        <td>{{ betsTotal[0] }}</td>
-        <td>{{ betsTotal[1] }}</td>
-        <td>{{ betsTotal[2] }}</td>
+        <td>{{ formatFromWei(betsTotal[0]) }}</td>
+        <td>{{ formatFromWei(betsTotal[1]) }}</td>
+        <td>{{ formatFromWei(betsTotal[2]) }}</td>
       </tr>
       </tbody>
     </table>
@@ -23,6 +23,7 @@
 <script>
 import {mapState, mapActions} from 'vuex'
 import {GET_BETS_TOTAL_ACTION} from '@/store/modules/bet/types'
+import {fromWei} from '@/contracts'
 
 export default {
   computed: {
@@ -33,7 +34,10 @@ export default {
   methods: {
     ...mapActions('bet', {
       'getBetsTotal': GET_BETS_TOTAL_ACTION,
-    })
+    }),
+    formatFromWei(value) {
+      return fromWei(value)
+    }
   },
   mounted() {
     const game = '0xaa20ed60319e1287bd551eb465dd8333389ef0bd3e0b6c2160f885afb8258015'

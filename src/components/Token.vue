@@ -44,6 +44,10 @@ import {
   GET_RECIPIENT_BALANCE_ACTION,
   TRANSFER_ACTION,
 } from '@/store/modules/faucet/types'
+import {
+  toWei,
+  fromWei,
+} from '@/contracts'
 
 export default {
   computed: {
@@ -92,10 +96,10 @@ export default {
       'transfer': TRANSFER_ACTION,
     }),
     formatFromWei: function (value) {
-      return value ? this.web3.utils.fromWei(value.toString()) : 0
+      return fromWei(value)
     },
     formatToWei: function (value) {
-      return value ? this.web3.utils.toWei(value.toString()) : 0
+      return toWei(value)
     },
   },
   mounted() {

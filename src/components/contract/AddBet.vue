@@ -36,6 +36,7 @@
 <script>
 import {mapActions, mapState} from 'vuex'
 import {ADD_BET_ACTION} from '@/store/modules/bet/types'
+import {toWei} from '@/contracts'
 
 export default {
   data() {
@@ -63,7 +64,7 @@ export default {
         account: this.account,
         game: this.game,
         result: this.result,
-        amount: this.amount,
+        amount: toWei(this.amount),
       })
     }
   }

@@ -21,12 +21,15 @@ export default {
     },
   },
   actions: {
-    [ADD_BET_ACTION]({commit}, payload) {
+    [ADD_BET_ACTION]({commit, dispatch}, payload) {
       commit(ADDING_BET_MUTATION, true)
       contract.methods
         .addBet(payload.game, payload.result, payload.amount)
         .send({from: payload.account, gas: 1000000})
-        .then(() => commit(ADDING_BET_MUTATION, false))
+        .then(() => {
+          commit(ADDING_BET_MUTATION, false)
+          dispatch(GET_BETS_TOTAL_ACTION, payload.game)
+        })
         .catch(error => {
           commit(ADDING_BET_MUTATION, false)
           alert('Error on add bet.')
