@@ -373,6 +373,25 @@ export default [
         "internalType": "bytes32",
         "name": "hash",
         "type": "bytes32"
+      }
+    ],
+    "name": "getBetsTotal",
+    "outputs": [
+      {
+        "internalType": "uint256[3]",
+        "name": "",
+        "type": "uint256[3]"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "hash",
+        "type": "bytes32"
       },
       {
         "internalType": "uint8",
